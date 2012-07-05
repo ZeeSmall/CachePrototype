@@ -30,7 +30,7 @@ public class CacheHelper {
 	// ファイル出力先のパス
 	private static final String PATH = "/sdcard/modeldata/modelcache.obj";
 	// キャッシュの保持のハッシュマップ
-	HashMap<String,SavedCache> cacheTable = new HashMap<String, SavedCache>();
+	HashMap<String,SavedCache> cacheTable;
 	
 	/**
 	 * コンストラクタ
@@ -39,10 +39,13 @@ public class CacheHelper {
 	 * @author s0921122
 	 * @version 1.1
 	 */
+	@SuppressWarnings("unchecked")
 	public CacheHelper(){
 		File file = new File(PATH);
 		if(file.exists() & file.length() > 0){
-			read_object(PATH);
+			cacheTable = (HashMap<String, SavedCache>) read_object(PATH);
+		}else{
+			cacheTable = new HashMap<String, SavedCache>();
 		}
 	}
 
@@ -129,6 +132,7 @@ public class CacheHelper {
 			return null;
 		}
 	}
+	
 	/**
 	 * キャッシュデータを削除
 	 * 
@@ -206,7 +210,7 @@ public class CacheHelper {
 			out.close();
 			outFile.close();
 		} catch(Exception e) {
-			Log.d(TAG,"write");
+			Log.d(TAG,"FileOutput");
 			e.printStackTrace();
 			return false;
 		}
@@ -229,7 +233,7 @@ public class CacheHelper {
 			in.close();
 			inFile.close();
 		} catch(Exception e) {
-			Log.d(TAG,"read");
+			Log.d(TAG,"FileInput");
 			e.printStackTrace();
 		}
 		return obj;
@@ -237,7 +241,9 @@ public class CacheHelper {
 
 }
 /**
- * キャッシュを保持するクラス
+ * キャッシュを保持するクラス<br>
+ * 直列化する都合上モデルデータはバイト配列にする<br>
+ * 処理のコストは未知数
  * 
  * @author s0921122
  *

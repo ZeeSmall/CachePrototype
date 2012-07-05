@@ -16,13 +16,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	
 	@Override
 	public void onCreate(SQLiteDatabase database) {
-		// TODO 自動生成されたメソッド・スタブ
 		createTable(database);
 	}
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		// TODO 自動生成されたメソッド・スタブ
 
 	}
 	
@@ -32,14 +30,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         	String sql = "CREATE TABLE " + TABLE_NAME + " ("
         		+ "id INTEGER PRIMARY KEY AUTOINCREMENT,"
         		+ "name TEXT UNIQUE NOT NULL,"
-        		+ "weight INTEGER,"
-        		+ "priority INTEGER"
+        		+ "weight INTEGER"
         		+ ")";
         	database.execSQL(sql);
         }catch(Exception e){
         	// テーブル作成失敗かすでにあるとき
         	System.out.println(e.toString());
-        	// Toast.makeText(this, "テーブル作成失敗", Toast.LENGTH_LONG).show();        	
         }
 	}
 
