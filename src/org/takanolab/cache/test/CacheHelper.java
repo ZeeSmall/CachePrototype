@@ -37,15 +37,29 @@ public class CacheHelper {
 	 * キャッシュファイルが存在するとき読み込みます
 	 * 
 	 * @author s0921122
-	 * @version 1.1
+	 * @version 1.2
 	 */
 	@SuppressWarnings("unchecked")
 	public CacheHelper(){
 		File file = new File(PATH);
-		if(file.exists() & file.length() > 0){
-			cacheTable = (HashMap<String, SavedCache>) read_object(PATH);
+		if(file.exists()){
+			// ファイルが存在する
+			if(file.length() > 0){
+				// 内容がある
+				cacheTable = (HashMap<String, SavedCache>) read_object(PATH);
+			}else{
+				// 内容がない
+				cacheTable = new HashMap<String, SavedCache>();
+			}
 		}else{
-			cacheTable = new HashMap<String, SavedCache>();
+			// ファイルが存在しない
+			try{
+				// ファイル作成
+				file.createNewFile();
+				cacheTable = new HashMap<String, SavedCache>();
+			}catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
