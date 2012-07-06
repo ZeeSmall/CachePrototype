@@ -27,9 +27,9 @@ public class CacheHelper {
 	
 	// ログ出力用
 	private static final String TAG = "CacheHelper";
-	// ファイル出力先のパス
+	// キャッシュファイルの出力先のパス
 	private static final String PATH = "/sdcard/modeldata/modelcache.obj";
-	// キャッシュの保持のハッシュマップ
+	// キャッシュの保持のためのハッシュマップ
 	HashMap<String,SavedCache> cacheTable;
 	
 	/**
@@ -46,7 +46,13 @@ public class CacheHelper {
 			// ファイルが存在する
 			if(file.length() > 0){
 				// 内容がある
-				cacheTable = (HashMap<String, SavedCache>) read_object(PATH);
+				try{
+					// データ読み込み
+					cacheTable = (HashMap<String, SavedCache>) read_object(PATH);
+				}catch(Exception e){
+					e.printStackTrace();
+					cacheTable = new HashMap<String, SavedCache>();
+				}
 			}else{
 				// 内容がない
 				cacheTable = new HashMap<String, SavedCache>();
