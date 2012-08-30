@@ -3,5 +3,9 @@
 
     <string name="hello">Hello World, CachePrototypeActivity!</string>
     <string name="app_name">CachePrototype</string>
+    <string name="btn_first">First</string>
+    <string name="btn_second">Second</string>
+    <string name="btn_third">Third</string>
+    <string name="btn_fourth">Fourth</string>
 
 </resources>
