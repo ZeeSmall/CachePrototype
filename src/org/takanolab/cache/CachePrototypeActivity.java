@@ -1,6 +1,7 @@
 package org.takanolab.cache;
 
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 
 import org.takanolab.cache.test.R;
@@ -19,9 +20,10 @@ import android.widget.TextView;
 public class CachePrototypeActivity extends Activity implements OnClickListener{
 	DatabaseHelper helper;
 	SQLiteDatabase db;
+	ContentValues val;
 	CacheHelper cacheHelper;
 	TextView console;
-	Button btn_1,btn_2,btn_3,btn_4;
+	Button btn_1,btn_2,btn_3,btn_4,btn_all;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -39,12 +41,15 @@ public class CachePrototypeActivity extends Activity implements OnClickListener{
 		btn_3.setOnClickListener(this);
 		btn_4 = (Button)findViewById(R.id.fourth);
 		btn_4.setOnClickListener(this);
+		btn_all = (Button)findViewById(R.id.all);
+		btn_all.setOnClickListener(this);
 		
 		cacheHelper = new CacheHelper();
 		helper = new DatabaseHelper(this);
-		db = helper.getReadableDatabase();
-
-		getPersonalDataAll();
+		db = helper.getReadableDatabase();	
+		
+		cacheHelper.clearCacheTable();
+		deleteTableData();
 		
 	}
 
@@ -57,74 +62,93 @@ public class CachePrototypeActivity extends Activity implements OnClickListener{
 		cacheHelper.OutPutCache();
 	}
 
+	private void deleteTableData(){
+		db = helper.getWritableDatabase();
+		db.beginTransaction();
+		
+		db.execSQL("delete from " + DatabaseHelper.TABLE_NAME);
+		db.setTransactionSuccessful();
+		db.endTransaction();
+	}
 
 	/**
 	 * データ登録
 	 */
-	private void setCache(String name){
-		
+	private void insertData(String name){
 		db = helper.getWritableDatabase();
 		db.beginTransaction();
 
-		ContentValues val = new ContentValues();
 		try{
-			int weight = getPersonalData(name);
 			val.put("name", name);
-			val.put("weight", weight);
+			val.put("weight", 10);
 			db.insert(DatabaseHelper.TABLE_NAME, null,val);
-			db.setTransactionSuccessful();
+			db.setTransactionSuccessful();		
+			setCache(name, 10);
 		}catch (Exception e) {
 			e.printStackTrace();
 		}finally{
 			db.endTransaction();
 			val.clear();
 		}
-		db = helper.getReadableDatabase();
 	}
 
 	/**
-	 * データ登録
+	 * キャッシュ作成
 	 * @param name
 	 */
-	private void setCache(String[] name){
+	private void setCache(String name,int weight){
+		if(cacheHelper.isCacheData(name)){
+			cacheHelper.addPriority(name, weight);
+		}else{			
+			InputStream is = new ByteArrayInputStream(name.getBytes());
+			cacheHelper.setCacheData(name, is, weight);
+		}
+	}
+	
+	/**
+	 * データ更新
+	 * @param name
+	 * @param weight
+	 */
+	private void updateData(String name,int weight){
 		db = helper.getWritableDatabase();
 		db.beginTransaction();
 		
-		db.execSQL("delete from "+ DatabaseHelper.TABLE_NAME);
-		
-		ContentValues val = new ContentValues();
+		val = new ContentValues();
 		try{
-			for(int i = 0;name.length > i;i++){
-				int weight = getPersonalData(name[i]);
-				val.put("name", name[i]);
-				val.put("weight", (i + 10));
-				db.insert(DatabaseHelper.TABLE_NAME, null,val);
-				val.clear();
-				console.append(name[i] + " insert\n");
-			}
+			val.put("weight", weight);
+			db.update(DatabaseHelper.TABLE_NAME, val, "name = " + name, null);
 			db.setTransactionSuccessful();
-		}catch (Exception e) {
-			e.printStackTrace();
-		}finally{
-			db.endTransaction();
-		}
-		db = helper.getReadableDatabase();
+			setCache(name, weight);
+			}catch(Exception e){
+				e.printStackTrace();
+			}finally{
+				db.endTransaction();
+			}
 	}
 
-	private int getPersonalData(String name){
+	/**
+	 * データベースに存在するかによって実行する関数が変わる
+	 * 
+	 * @param name
+	 */
+	private void checkExist(String name){
+		db = helper.getReadableDatabase();
 		Cursor csr = db.rawQuery("select weight from " + DatabaseHelper.TABLE_NAME + "where name = " + name, null);
 		if(csr.moveToFirst()){
-			return csr.getInt(0);
+			updateData(name,csr.getInt(0));
 		}else{
-			return 0;
+			insertData(name);
 		}
 	}
 
 	private void getPersonalDataAll(){
+		db = helper.getReadableDatabase();
 		Cursor csr = db.rawQuery("select name,weight from " + DatabaseHelper.TABLE_NAME + " order by id", null);
 		//csr.moveToFirst();
 		while(csr.moveToNext()){
 			console.append(csr.getString(0) + csr.getInt(1) + "\n");
+			getCache(csr.getString(0) + "\n");
 		}
 	}
 
@@ -135,7 +159,7 @@ public class CachePrototypeActivity extends Activity implements OnClickListener{
 	 */
 	private void getCache(String name){
 		if(cacheHelper.isCacheData(name)){
-			SavedCache cache = cacheHelper.getCacheData(name);
+			SavedCache cache = cacheHelper.getCacheClass(name);
 			try {
 				String temp = new String(cache.getModelByte(),"UTF-8");
 				console.append(name + temp + "\n");
@@ -152,17 +176,19 @@ public class CachePrototypeActivity extends Activity implements OnClickListener{
 
 		switch(v.getId()){
 		case R.id.first :
-			setCache("first");
+			checkExist("first");
 			break;
 		case R.id.second :
-			setCache("second");
+			checkExist("second");
 			break;
 		case R.id.third :
-			setCache("third");
+			checkExist("third");
 			break;
 		case R.id.fourth :
-			setCache("fourth");
+			checkExist("fourth");
 			break;
+		case R.id.all :
+			getPersonalDataAll();
 		default : 
 			break;
 		}

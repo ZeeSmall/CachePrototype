@@ -22,14 +22,11 @@ import android.util.Log;
 
 public class SavedCache implements Serializable{
 
-
 	private static final String TAG = "SavedCache";
 	private static final long serialVersionUID = 1L;
 	
 	// モデルのキャッシュ
 	byte[] modelByte;
-	// 生存時間
-	long survivalTime;
 	// 優先度
 	int priority;
 	
@@ -48,22 +45,9 @@ public class SavedCache implements Serializable{
 	 * @param time
 	 * @param priority
 	 */
-	public SavedCache(InputStream modelData,long time,int priority){
+	public SavedCache(InputStream modelData,int priority){
 		this.modelByte = getBytes(modelData);
-		this.survivalTime = time;
 		this.priority = priority;
-	}
-	/**
-	 * 初期値を代入するコンストラクタ
-	 * 
-	 * @author s0921122
-	 * @param modelData
-	 * @param time
-	 */
-	public SavedCache(InputStream modelData,long time){
-		this.modelByte = getBytes(modelData);
-		this.survivalTime = time;
-		this.priority = 0;
 	}
 	/**
 	 * 初期値を代入するコンストラクタ
@@ -73,8 +57,7 @@ public class SavedCache implements Serializable{
 	 */
 	public SavedCache(InputStream modelData){
 		this.modelByte = getBytes(modelData);
-		this.survivalTime = 10000;
-		this.priority = 5;
+		this.priority = 10;
 	}
 
 	/**
@@ -111,23 +94,6 @@ public class SavedCache implements Serializable{
 	}
 	
 	/**
-	 * 生存時間を返す
-	 * 
-	 * @return
-	 */
-	public long getLimitTime() {
-		return survivalTime;
-	}
-	/**
-	 * 生存時間をセット
-	 * 
-	 * @param limitTime
-	 */
-	public void setLimitTime(long limitTime) {
-		this.survivalTime = limitTime;
-	}
-	
-	/**
 	 * 優先度を返す
 	 * 
 	 * @return
@@ -142,6 +108,18 @@ public class SavedCache implements Serializable{
 	 */
 	public void setPriority(int priority) {
 		this.priority = priority;
+	}
+	/**
+	 * 優先度を計算
+	 */
+	public void addPriority(int priority){
+		this.priority += priority;
+	}
+	/**
+	 * 優先度を変化させる
+	 */
+	public void recastPriority(){
+		priority = priority / 2;
 	}
 	
 	/**

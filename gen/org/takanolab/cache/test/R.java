@@ -15,6 +15,7 @@ public final class R {
     }
     public static final class id {
         public static final int Console=0x7f050001;
+        public static final int all=0x7f050006;
         public static final int first=0x7f050002;
         public static final int fourth=0x7f050005;
         public static final int scrollView1=0x7f050000;

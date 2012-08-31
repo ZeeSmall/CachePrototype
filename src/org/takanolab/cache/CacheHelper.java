@@ -69,7 +69,7 @@ public class CacheHelper {
 	 * @author s0921122
 	 * @version 1.0
 	 * @param name 
-	 * @param cc 
+	 * @param sc
 	 */
 	public void setCacheData(String name,SavedCache sc){
 		importCache.put(name, sc);
@@ -84,21 +84,32 @@ public class CacheHelper {
 	 * @param is
 	 */
 	public void setCacheData(String name,InputStream is,int weight){
-		long time = weight * 1000;
-		int priority = weight * 1;
-		SavedCache cacheData = new SavedCache(is,time,priority);
+		int priority = weight;
+		SavedCache cacheData = new SavedCache(is,priority);
+		recastCachePriority();
 		importCache.put(name, cacheData);
+	}
+	
+	/**
+	 * 優先度をプラスする
+	 * 
+	 * @param name
+	 * @param weight
+	 */
+	public void addPriority(String name,int weight){
+		recastCachePriority();
+		importCache.get(name).addPriority(weight);
 	}
 
 	/**
-	 * モデルキャッシュを持つクラスを返す
+	 * キャッシュクラスを返す
 	 * 
 	 * @author s0921122
 	 * @version 1.0
 	 * @param name
 	 * @return SavedCache
 	 */
-	public SavedCache getCacheData(String name){
+	public SavedCache getCacheClass(String name){
 		if(importCache.containsKey(name)){
 			return importCache.get(name);
 		}else{
@@ -168,6 +179,47 @@ public class CacheHelper {
 	 */
 	public Iterator<String> getMapIterator(){
 		return importCache.keySet().iterator();
+	}
+	
+	/**
+	 * キャッシュの名前のリストを返す
+	 * @return
+	 */
+	public String[] getCacheList(){
+		Iterator<String> itr = importCache.keySet().iterator();
+		String[] list = new String[importCache.size()];
+		int i = 0;
+		while(itr.hasNext()){
+			list[i] = itr.next();
+		}
+		return list;
+	}
+	
+	/**
+	 * 各キャッシュの優先度を再計算
+	 * 
+	 */
+	public void recastCachePriority(){
+		Iterator<String> itr = importCache.keySet().iterator();
+		while(itr.hasNext()){
+			importCache.get(itr.next()).recastPriority();
+		}
+	}
+	
+	/**
+	 * 一番優先度の低いものを削除する
+	 */
+	public void removeLowPriorityCache(){
+		String lowname = "";
+		int temp = 0;
+		Iterator<String> itr = importCache.keySet().iterator();
+		while(itr.hasNext()){
+			String getname = itr.next();
+			if(temp >= importCache.get(getname).getPriority()){
+				lowname = getname;
+			}
+		}
+		importCache.remove(lowname);
 	}
 	
 	/**
