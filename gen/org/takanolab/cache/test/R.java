@@ -16,6 +16,7 @@ public final class R {
     public static final class id {
         public static final int Console=0x7f050001;
         public static final int all=0x7f050006;
+        public static final int clear=0x7f050007;
         public static final int first=0x7f050002;
         public static final int fourth=0x7f050005;
         public static final int scrollView1=0x7f050000;
@@ -27,9 +28,11 @@ public final class R {
     }
     public static final class string {
         public static final int app_name=0x7f040001;
+        public static final int btn_clear=0x7f040007;
         public static final int btn_first=0x7f040002;
         public static final int btn_fourth=0x7f040005;
         public static final int btn_second=0x7f040003;
+        public static final int btn_show=0x7f040006;
         public static final int btn_third=0x7f040004;
         public static final int hello=0x7f040000;
     }

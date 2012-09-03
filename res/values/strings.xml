@@ -7,5 +7,7 @@
     <string name="btn_second">Second</string>
     <string name="btn_third">Third</string>
     <string name="btn_fourth">Fourth</string>
+    <string name="btn_show">Show</string>
+    <string name="btn_clear">Clear</string>
 
 </resources>

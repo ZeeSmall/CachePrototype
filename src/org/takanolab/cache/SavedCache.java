@@ -119,7 +119,7 @@ public class SavedCache implements Serializable{
 	 * 優先度を変化させる
 	 */
 	public void recastPriority(){
-		priority = priority / 2;
+		priority /= 2;
 	}
 	
 	/**

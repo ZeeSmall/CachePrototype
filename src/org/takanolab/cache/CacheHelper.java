@@ -23,6 +23,8 @@ public class CacheHelper {
 	private static final String TAG = "CacheHelper";
 	// キャッシュファイルの入出力先のパス
 	private static final String PATH = "/sdcard/modeldata/modelcache";
+	// 保持するキャッシュの数
+	private static final int CACHE_MAX = 3;
 	// ファイルから読み込むマップ
 	HashMap<String,SavedCache> importCache;
 	
@@ -87,6 +89,10 @@ public class CacheHelper {
 		int priority = weight;
 		SavedCache cacheData = new SavedCache(is,priority);
 		recastCachePriority();
+		if(importCache.size() >= CACHE_MAX){
+			Log.d(TAG,"Remove Low Priority Cache");
+			removeLowPriorityCache();
+		}
 		importCache.put(name, cacheData);
 	}
 	
@@ -211,11 +217,13 @@ public class CacheHelper {
 	 */
 	public void removeLowPriorityCache(){
 		String lowname = "";
-		int temp = 0;
+		int temp = Integer.MAX_VALUE;
 		Iterator<String> itr = importCache.keySet().iterator();
 		while(itr.hasNext()){
 			String getname = itr.next();
-			if(temp >= importCache.get(getname).getPriority()){
+			int getpriority = importCache.get(getname).getPriority();
+			if(temp >= getpriority){
+				temp = getpriority;
 				lowname = getname;
 			}
 		}
