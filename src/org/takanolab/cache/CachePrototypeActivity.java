@@ -14,43 +14,49 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
+import android.widget.GridView;
 import android.widget.TextView;
 
-public class CachePrototypeActivity extends Activity implements OnClickListener{
+public class CachePrototypeActivity extends Activity implements OnItemClickListener{
 	private static String TAG = "CachePrototype";
 	DatabaseHelper helper;
 	SQLiteDatabase db;
 	ContentValues val;
 	CacheHelper cacheHelper;
-	TextView console;
-	Button btn_1,btn_2,btn_3,btn_4,btn_all,btn_cle;
+	TextView console,history;
+	GridView gView;
+	String[] lists;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.main);
-
-		console = (TextView)findViewById(R.id.Console);
-		console.setText("");
+		setContentView(R.layout.main2);
 		
-		btn_1 = (Button)findViewById(R.id.first);
-		btn_1.setOnClickListener(this);
-		btn_2 = (Button)findViewById(R.id.second);
-		btn_2.setOnClickListener(this);
-		btn_3 = (Button)findViewById(R.id.third);
-		btn_3.setOnClickListener(this);
-		btn_4 = (Button)findViewById(R.id.fourth);
-		btn_4.setOnClickListener(this);
-		btn_all = (Button)findViewById(R.id.all);
-		btn_all.setOnClickListener(this);
-		btn_cle = (Button)findViewById(R.id.clear);
-		btn_cle.setOnClickListener(this);
+		console = (TextView)findViewById(R.id.console);
+		history = (TextView)findViewById(R.id.history);
+		history.setText("history:\n");
+		
+		gView = (GridView)findViewById(R.id.gridView1);
 		
 		cacheHelper = new CacheHelper();
 		helper = new DatabaseHelper(this);
 		db = helper.getReadableDatabase();	
+		
+	}
+	
+	@Override
+	protected void onStart() {
+		super.onStart();
+		
+		lists = new String[] {"first","second","third","forth","fifth","six","delete"};
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_gallery_item, lists);
+		gView.setAdapter(adapter);
+		gView.setOnItemClickListener(this);
+		
+		getPersonalDataAll();
 		
 	}
 
@@ -160,7 +166,7 @@ public class CachePrototypeActivity extends Activity implements OnClickListener{
 		db = helper.getReadableDatabase();
 		Cursor csr = db.rawQuery("select name,weight from " + DatabaseHelper.TABLE_NAME + " order by id", null);
 		//csr.moveToFirst();
-		console.setText("");
+		console.setText("cache:\n");
 		while(csr.moveToNext()){
 			//console.append(csr.getString(0) + "  " + csr.getInt(1) + "\n");
 			getCache(csr.getString(0));
@@ -182,35 +188,21 @@ public class CachePrototypeActivity extends Activity implements OnClickListener{
 				e.printStackTrace();
 			}
 		}else{
-			console.append(name + " no match\n");
+			//console.append(name + " no match\n");
 		}
 	}
 
-	@Override
-	public void onClick(View v) {
 
-		switch(v.getId()){
-		case R.id.first :
-			checkExist("first");
-			break;
-		case R.id.second :
-			checkExist("second");
-			break;
-		case R.id.third :
-			checkExist("third");
-			break;
-		case R.id.fourth :
-			checkExist("fourth");
-			break;
-		case R.id.all :
-			getPersonalDataAll();
-			break;
-		case R.id.clear :
+	@Override
+	public void onItemClick(AdapterView<?> arg0, View v, int pos, long arg3) {
+		TextView tex = (TextView)v;
+		if(tex.getText().toString().equals("delete")){
 			clearDatabaseAndCache();
-			break;
-		default : 
-			break;
+			history.setText("history:\n");
+			getPersonalDataAll();
+		}else{
+			checkExist(tex.getText().toString());
+			history.append(tex.getText().toString() + "\n");
 		}
-		
 	}
 }

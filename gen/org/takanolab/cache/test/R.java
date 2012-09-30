@@ -17,14 +17,18 @@ public final class R {
         public static final int Console=0x7f050001;
         public static final int all=0x7f050006;
         public static final int clear=0x7f050007;
+        public static final int console=0x7f050009;
         public static final int first=0x7f050002;
         public static final int fourth=0x7f050005;
+        public static final int gridView1=0x7f050008;
+        public static final int history=0x7f05000a;
         public static final int scrollView1=0x7f050000;
         public static final int second=0x7f050003;
         public static final int third=0x7f050004;
     }
     public static final class layout {
         public static final int main=0x7f030000;
+        public static final int main2=0x7f030001;
     }
     public static final class string {
         public static final int app_name=0x7f040001;
@@ -35,5 +39,7 @@ public final class R {
         public static final int btn_show=0x7f040006;
         public static final int btn_third=0x7f040004;
         public static final int hello=0x7f040000;
+        public static final int txt_chache=0x7f040008;
+        public static final int txt_history=0x7f040009;
     }
 }
